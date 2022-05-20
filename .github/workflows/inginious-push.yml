@@ -56,6 +56,6 @@ jobs:
           fetch-depth: 0
       - name: Push using WebDAV
         run: |
+          rsync -rv --exclude ".github" --exclude "lost+found" --exclude ".commit_id" --inplace --cvs-exclude --delete $GITHUB_WORKSPACE/$REPO_COURSE_DIR/ /tmp/webdav/
           echo "$GITHUB_SHA" > /tmp/webdav/.commit_id
-          rsync -rv --exclude ".github" --cvs-exclude --delete $GITHUB_WORKSPACE/$REPO_COURSE_DIR/ /tmp/webdav/
           sudo umount /tmp/webdav
