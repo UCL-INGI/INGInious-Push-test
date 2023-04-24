@@ -12,21 +12,6 @@ env:
   REPO_COURSE_DIR: "." # Put the directory name of the root of the INGinious course in this repo
 
 jobs:
-  context:
-    name: Echo context
-    steps:
-      - run: |
-          echo $HEAD_REF
-          echo $MERGED
-          echo "${{ github.event.repository.name }}"
-          echo "${{ github.head_ref == 'inginious-remote-changes' }}"
-          echo "${{ github.event_name }}"
-          echo "${{ github.event.pull_request.merged == false }}"
-          echo "${{ (github.head_ref == 'inginious-remote-changes' && github.event.pull_request.merged == false) || github.event_name == 'push' }}"
-        env:
-          HEAD_REF: ${{ github.head_ref }}
-          MERGED: ${{ github.event.pull_request.merged }}
-    runs-on: ubuntu-latest
   reset_changes:
     needs: context
     name: Reset INGInious changes
@@ -48,7 +33,7 @@ jobs:
           ls -lah /tmp/webdav
           echo "commit_id=$(cat /tmp/webdav/.commit_id)" >> $GITHUB_OUTPUT
       - name: Checkout remote commit ID
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ steps.mount.outputs.commit_id }}
       - name: Push using WebDAV
@@ -79,7 +64,7 @@ jobs:
         if: ${{ steps.mount.outputs.commit_id == '' }}
         run: echo "$GITHUB_SHA" > /tmp/webdav/.commit_id
       - name: Checkout remote commit ID
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ steps.mount.outputs.commit_id }}
       - name: Copy over remote files
@@ -87,7 +72,7 @@ jobs:
           rm -rf $GITHUB_WORKSPACE/$REPO_COURSE_DIR/*
           cp -rf /tmp/webdav/* $GITHUB_WORKSPACE/$REPO_COURSE_DIR
       - name: Prepare PR with changes if any
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v4
         id: create-pr
         with:
           commit-message: INGInious remote changes
