@@ -13,7 +13,6 @@ env:
 
 jobs:
   reset_changes:
-    needs: context
     name: Reset INGInious changes
     if: github.head_ref == 'inginious-remote-changes' && github.event.pull_request.merged == false
     runs-on: ubuntu-latest
